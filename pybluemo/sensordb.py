@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import boto3
 import json
-from aws_srp import AWSSRP
+from pybluemo.aws_srp import AWSSRP
 from python_graphql_client import GraphqlClient
 import os
 import threading
@@ -352,7 +352,9 @@ mutation PublishEvent($userId: ID!, $sourceId: ID!, $eventId: ID!) {
       manufacturing
       DFUPackage
       yaspSpecification
-      collaborators
+      _version
+      _deleted
+      _lastChangedAt
       createdAt
       updatedAt
       owner
@@ -385,6 +387,7 @@ mutation PublishEvent($userId: ID!, $sourceId: ID!, $eventId: ID!) {
             json.dump(ver_dict, file)
         s3 = boto3.client("s3")
         s3.upload_file("temp_s3_version.json", self.bucket, "settings/firmwareVersions.json")
+        os.remove("temp_s3_version.json")
 
     def get_fw_version(self):
         s3 = boto3.resource("s3")
